@@ -10,6 +10,26 @@ The immediate goal is not a polished paper-ready system. The immediate goal is t
 
 The long-term goal is a top-tier ML research project, so rigor matters. Avoid hype. Prefer clean, testable implementations and fair baselines.
 
+## Environment requirement
+
+All Python-related work for this repository must run inside the Conda environment `rpe-act-comp`.
+
+This applies to:
+- `python`
+- `pip`
+- `pytest`
+- training or evaluation scripts
+- experiment runners
+- data preparation scripts
+- any package installation for this repo
+
+Before running any Python, package, test, or experiment command, first print:
+- `python -c "import sys; print(sys.executable)"`
+- `python -V`
+- `pip -V`
+
+If those commands do not show the `rpe-act-comp` interpreter, stop and activate `rpe-act-comp` before proceeding.
+
 ## What Codex should do first
 
 Before making large changes:
