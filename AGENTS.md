@@ -112,3 +112,67 @@ If a design choice is unclear, prefer:
 - a smaller calibration dataset subset
 - evaluation with held-out perplexity / NLL and teacher-logit-KL
 - a simpler implementation that preserves the scientific comparison
+
+## Git workflow rules
+
+Use git throughout development, but keep the workflow conservative and reviewable.
+
+### Commit policy
+
+- Make small, logical commits at clear checkpoints
+- Prefer checkpoint-sized commits rather than one large commit
+- Use informative commit messages
+- Commit after meaningful milestones such as:
+  - repo scaffold created
+  - model adapter working
+  - activation hook working
+  - PCA and random baselines implemented
+  - V/O folding validated
+  - RPEDR search implemented
+  - single-head experiment pipeline working
+  - plotting scripts added
+
+### Push policy
+
+- Do not automatically push after every file edit
+- Do not push silently
+- Ask for confirmation before any `git push`
+- When asked to push, push to `origin main` unless the user explicitly specifies another branch
+
+### Before each commit
+
+Before committing:
+1. summarize what changed
+2. list the main files added or modified
+3. mention any known limitations or unfinished parts in the current checkpoint
+
+### Commit message style
+
+Use short, descriptive commit messages, for example:
+- `init repo scaffold`
+- `add model adapter and vo hooks`
+- `implement pca and random baselines`
+- `add vo folding and equivalence tests`
+- `implement rpedr single-head search`
+- `add evaluation and plotting scripts`
+
+### Safety rules for git operations
+
+- Never rewrite history unless the user explicitly asks
+- Do not force-push unless the user explicitly asks
+- Do not delete branches unless the user explicitly asks
+- Do not modify remote configuration unless the user explicitly asks
+
+### End-of-checkpoint behavior
+
+At the end of each major checkpoint:
+1. report what was completed
+2. report what remains next
+3. suggest a commit message
+4. ask whether to run `git push origin main`
+
+## Branching rules
+
+- Stay on the current branch unless the user explicitly asks to create or switch branches
+- Do not create experimental branches by default
+- Assume the main working branch is `main`
