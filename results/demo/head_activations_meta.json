@@ -1,6 +1,0 @@
-{
-  "num_layers": 2,
-  "num_heads": 4,
-  "head_dim": 16,
-  "num_sequences": 3
-}
