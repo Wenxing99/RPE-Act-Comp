@@ -1,0 +1,5 @@
+seed: 0
+artifact_root: results/demo
+target_layer: 0
+rank: 8
+basis_source: pca

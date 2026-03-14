@@ -63,6 +63,43 @@ conda activate rpe-act-comp
 python -m pytest
 ```
 
+Minimal first-checkpoint workflow:
+
+```powershell
+conda activate rpe-act-comp
+python scripts/00_prepare_data.py --artifact-root results/demo
+```
+
+```powershell
+conda activate rpe-act-comp
+python scripts/01_collect_head_acts.py --artifact-root results/demo
+```
+
+```powershell
+conda activate rpe-act-comp
+python scripts/02_run_pca_baseline.py --exp-config configs/exp/baseline_demo.yaml
+```
+
+```powershell
+conda activate rpe-act-comp
+python scripts/03_run_random_baseline.py --exp-config configs/exp/baseline_demo.yaml
+```
+
+```powershell
+conda activate rpe-act-comp
+python scripts/05_fold_vo_and_save.py --basis-file results/demo/pca_bases.pt --artifact-root results/demo
+```
+
+```powershell
+conda activate rpe-act-comp
+python scripts/06_eval_model.py --artifact-root results/demo
+```
+
+```powershell
+conda activate rpe-act-comp
+python scripts/06_eval_model.py --artifact-root results/demo --compression-spec results/demo/compression_spec.pt --teacher-kl
+```
+
 ## Status
 
 Early-stage research prototype.

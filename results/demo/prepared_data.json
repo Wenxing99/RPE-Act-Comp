@@ -1,0 +1,14 @@
+{
+  "calibration_texts": [
+    "Compression research needs clean baselines before bigger claims.",
+    "We focus on per-head value output compression in a small decoder only model.",
+    "Random orthoprojectors and PCA are the first baselines before RPEDR search."
+  ],
+  "evaluation_texts": [
+    "Compression research needs clean baselines before bigger claims.",
+    "We focus on per-head value output compression in a small decoder only model.",
+    "Random orthoprojectors and PCA are the first baselines before RPEDR search.",
+    "A calibration split and a held out split should stay separate."
+  ],
+  "max_length": 64
+}

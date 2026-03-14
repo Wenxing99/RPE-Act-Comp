@@ -1,0 +1,17 @@
+model_type: gpt2
+pretrained_name: null
+device: cpu
+max_length: 64
+tokenizer:
+  kind: simple_char
+  vocab_size: 256
+gpt2_config:
+  vocab_size: 256
+  n_embd: 64
+  n_layer: 2
+  n_head: 4
+  n_positions: 128
+  n_ctx: 128
+  resid_pdrop: 0.0
+  embd_pdrop: 0.0
+  attn_pdrop: 0.0

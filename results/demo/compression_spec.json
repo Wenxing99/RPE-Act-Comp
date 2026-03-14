@@ -1,0 +1,6 @@
+{
+  "method": "pca",
+  "layer_index": 0,
+  "rank": 8,
+  "num_heads": 4
+}
