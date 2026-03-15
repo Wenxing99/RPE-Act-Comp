@@ -17,6 +17,7 @@ def evaluate_causal_lm(
         texts,
         return_tensors="pt",
         truncation=True,
+        padding=True,
         max_length=max_length,
     )
     tokenized = {key: value.to(device) for key, value in tokenized.items()}

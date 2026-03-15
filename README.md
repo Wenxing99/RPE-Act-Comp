@@ -100,6 +100,18 @@ conda activate rpe-act-comp
 python scripts/06_eval_model.py --artifact-root results/demo --compression-spec results/demo/compression_spec.pt --teacher-kl
 ```
 
+Minimal pretrained single-head RPEDR workflow:
+
+```powershell
+conda activate rpe-act-comp
+python -c "import sys; print(sys.executable)"
+python -V
+pip -V
+python scripts/04_run_rpedr_search.py --model-config configs/model/distilgpt2_single_head.yaml --data-config configs/data/wikitext2_single_head.yaml --exp-config configs/exp/single_head_distilgpt2.yaml
+```
+
+This writes split-aware comparison artifacts under `results/single_head_distilgpt2/`.
+
 ## Status
 
 Early-stage research prototype.

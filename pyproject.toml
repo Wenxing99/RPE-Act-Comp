@@ -9,6 +9,7 @@ description = "Minimal RPEDR-style V/O compression prototype for decoder-only la
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+  "datasets==4.7.0",
   "numpy==2.4.3",
   "pandas==3.0.1",
   "pypdf==6.8.0",

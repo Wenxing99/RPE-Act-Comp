@@ -10,6 +10,7 @@ def collect_head_activations(adapter, texts: list[str], max_length: int, device:
         texts,
         return_tensors="pt",
         truncation=True,
+        padding=True,
         max_length=max_length,
     )
     tokenized = {key: value.to(device) for key, value in tokenized.items()}

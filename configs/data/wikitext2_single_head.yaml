@@ -1,0 +1,25 @@
+dataset:
+  path: wikitext
+  name: wikitext-2-raw-v1
+  text_field: text
+  min_chars: 64
+  splits:
+    S0_local:
+      hf_split: train
+      start: 0
+      count: 8
+    S1_select:
+      hf_split: train
+      start: 32
+      count: 4
+    S2_modelsel:
+      hf_split: validation
+      start: 0
+      count: 4
+    S3_test:
+      hf_split: test
+      start: 0
+      count: 8
+calibration_split: S0_local
+evaluation_split: S3_test
+max_length: 128
