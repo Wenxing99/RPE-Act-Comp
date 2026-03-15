@@ -114,9 +114,8 @@ def _top_eigen_basis(projectors: list[torch.Tensor], rank: int) -> torch.Tensor:
     return evecs[:, order[:rank]].contiguous()
 
 
-def run_rpedr_variant(
+def _search_group_winners(
     *,
-    method: str,
     local_activations: torch.Tensor,
     output_weight: torch.Tensor,
     head_dim: int,
@@ -126,7 +125,7 @@ def run_rpedr_variant(
     num_groups: int,
     group_size: int,
     topk: int,
-) -> SearchResult:
+) -> tuple[list[CandidateRecord], float]:
     start = time.perf_counter()
     candidates = _sample_candidates(head_dim, rank, num_groups * group_size, seed=seed)
     grouped_records: list[list[CandidateRecord]] = []
@@ -151,11 +150,38 @@ def run_rpedr_variant(
         winner = min(finalists, key=lambda item: item.select_score if item.select_score is not None else float("inf"))
         group_winners.append(winner)
 
+    return group_winners, time.perf_counter() - start
+
+
+def run_rpedr_variant(
+    *,
+    method: str,
+    local_activations: torch.Tensor,
+    output_weight: torch.Tensor,
+    head_dim: int,
+    rank: int,
+    seed: int,
+    scorer: Callable[[torch.Tensor], float],
+    num_groups: int,
+    group_size: int,
+    topk: int,
+) -> SearchResult:
+    group_winners, elapsed = _search_group_winners(
+        local_activations=local_activations,
+        output_weight=output_weight,
+        head_dim=head_dim,
+        rank=rank,
+        seed=seed,
+        scorer=scorer,
+        num_groups=num_groups,
+        group_size=group_size,
+        topk=topk,
+    )
+
     if method == "rpedr_single_best":
         best = min(group_winners, key=lambda item: item.select_score if item.select_score is not None else float("inf"))
         final_basis = best.basis
         projector_trace = float(torch.trace(projector_from_basis(final_basis)).item())
-        elapsed = time.perf_counter() - start
         return SearchResult(
             method=method,
             basis=final_basis,
@@ -173,7 +199,6 @@ def run_rpedr_variant(
 
     projector_list = [projector_from_basis(record.basis) for record in group_winners]
     final_basis = _top_eigen_basis(projector_list, rank)
-    elapsed = time.perf_counter() - start
     select_scores = [record.select_score for record in group_winners if record.select_score is not None]
     local_scores = [record.local_score for record in group_winners]
     return SearchResult(
@@ -190,6 +215,63 @@ def run_rpedr_variant(
             "num_candidates": num_groups * group_size,
         },
     )
+
+
+def run_rpedr_single_best_and_full(
+    *,
+    local_activations: torch.Tensor,
+    output_weight: torch.Tensor,
+    head_dim: int,
+    rank: int,
+    seed: int,
+    scorer: Callable[[torch.Tensor], float],
+    num_groups: int,
+    group_size: int,
+    topk: int,
+) -> tuple[SearchResult, SearchResult]:
+    group_winners, elapsed = _search_group_winners(
+        local_activations=local_activations,
+        output_weight=output_weight,
+        head_dim=head_dim,
+        rank=rank,
+        seed=seed,
+        scorer=scorer,
+        num_groups=num_groups,
+        group_size=group_size,
+        topk=topk,
+    )
+    shared_metadata = {
+        "num_groups": num_groups,
+        "group_size": group_size,
+        "topk": topk,
+        "num_candidates": num_groups * group_size,
+    }
+
+    best = min(group_winners, key=lambda item: item.select_score if item.select_score is not None else float("inf"))
+    single_best_result = SearchResult(
+        method="rpedr_single_best",
+        basis=best.basis,
+        projector_trace=float(torch.trace(projector_from_basis(best.basis)).item()),
+        local_score=best.local_score,
+        select_score=best.select_score,
+        elapsed_sec=elapsed,
+        metadata=shared_metadata,
+    )
+
+    projector_list = [projector_from_basis(record.basis) for record in group_winners]
+    final_basis = _top_eigen_basis(projector_list, rank)
+    select_scores = [record.select_score for record in group_winners if record.select_score is not None]
+    local_scores = [record.local_score for record in group_winners]
+    full_result = SearchResult(
+        method="rpedr_full",
+        basis=final_basis,
+        projector_trace=float(torch.trace(projector_from_basis(final_basis)).item()),
+        local_score=float(sum(local_scores) / len(local_scores)),
+        select_score=float(sum(select_scores) / len(select_scores)) if select_scores else None,
+        elapsed_sec=elapsed,
+        metadata=shared_metadata,
+    )
+    return single_best_result, full_result
 
 
 def run_rpedr_m1(
