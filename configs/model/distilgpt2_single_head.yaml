@@ -1,5 +1,5 @@
 model_type: gpt2
 pretrained_name: distilgpt2
 tokenizer_name: distilgpt2
-device: cpu
+device: auto
 max_length: 128

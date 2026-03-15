@@ -24,7 +24,7 @@ from experiments.single_head_rpedr import (
 )
 from models.gpt2_adapter import CompressionSpec, GPT2Adapter
 from data.text_data import load_named_splits
-from utils.config import ensure_dir, load_yaml
+from utils.config import ensure_dir, load_yaml, resolve_runtime_device
 from utils.io import save_json, save_pt
 
 
@@ -59,8 +59,9 @@ def main() -> None:
 
     artifact_root = ensure_dir(exp_config["artifact_root"])
     named_splits = load_named_splits(data_config)
-    adapter = GPT2Adapter.from_config(model_config).to(model_config.get("device", "cpu"))
-    device = model_config.get("device", "cpu")
+    device, device_meta = resolve_runtime_device(model_config.get("device"))
+    print(f"[device] requested={device_meta['requested_device']} selected={device_meta['selected_device']} cuda_available={device_meta['cuda_available']}")
+    adapter = GPT2Adapter.from_config(model_config).to(device)
 
     target_layer = int(exp_config["target"]["layer_index"])
     target_head = int(exp_config["target"]["head_index"])
@@ -156,6 +157,7 @@ def main() -> None:
                 "test_ppl": dense_metrics["perplexity"],
                 "test_teacher_kl": None,
                 "split_provenance": exp_config["splits"],
+                "device": device_meta,
             }
             rows.append(result)
             _save_basis(artifact_root, method, None, result)
@@ -217,6 +219,7 @@ def main() -> None:
             "test_teacher_kl": test_metrics.get("teacher_logit_kl"),
             "split_provenance": exp_config["splits"],
             "search_hparams": search_meta,
+            "device": device_meta,
         }
         rows.append(result)
         _save_basis(artifact_root, method, basis, result)
@@ -226,6 +229,7 @@ def main() -> None:
             "model_config": args.model_config,
             "data_config": args.data_config,
             "exp_config": args.exp_config,
+            "device": device_meta,
             "rows": rows,
         },
         artifact_root / "summary.json",
@@ -245,11 +249,14 @@ def main() -> None:
                 "test_nll",
                 "test_ppl",
                 "test_teacher_kl",
+                "selected_device",
             ],
         )
         writer.writeheader()
         for row in rows:
-            writer.writerow({key: row.get(key) for key in writer.fieldnames})
+            csv_row = {key: row.get(key) for key in writer.fieldnames}
+            csv_row["selected_device"] = row["device"]["selected_device"]
+            writer.writerow(csv_row)
 
 
 if __name__ == "__main__":

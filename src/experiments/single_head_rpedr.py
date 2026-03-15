@@ -9,7 +9,7 @@ import torch
 from baselines.pca_baseline import fit_pca_basis
 from baselines.random_baseline import fit_random_basis
 from compression.vo_folding import projector_from_basis
-from models.gpt2_adapter import CompressionSpec
+from models.gpt2_adapter import CompressedGPT2Attention, CompressionSpec
 
 
 @dataclass
@@ -39,6 +39,7 @@ def compute_local_score(
     output_weight: torch.Tensor,
     basis: torch.Tensor,
 ) -> float:
+    output_weight = output_weight.to(activations.device)
     projector = projector_from_basis(basis).to(activations.device)
     dense_output = activations @ output_weight
     projected_output = activations @ projector @ output_weight
@@ -65,13 +66,20 @@ def make_teacher_kl_scorer(
     with torch.no_grad():
         teacher_logits = adapter.model(**tokenized).logits
 
+    scorer_adapter = adapter.clone().to(device)
+    scorer_basis = torch.eye(scorer_adapter.head_dim, dtype=teacher_logits.dtype, device=device)[:, :1]
+    scorer_attention = scorer_adapter.model.transformer.h[layer_index].attn
+    scorer_adapter.model.transformer.h[layer_index].attn = CompressedGPT2Attention(
+        scorer_attention,
+        {head_index: scorer_basis},
+    )
+    scorer_adapter.model.eval()
+    teacher_probs = torch.softmax(teacher_logits, dim=-1)
+
     def score(basis: torch.Tensor) -> float:
-        spec = CompressionSpec(layer_index=layer_index, rank=basis.shape[1], bases={head_index: basis})
-        compressed = adapter.apply_compression(spec).to(device)
-        compressed.model.eval()
+        scorer_adapter.model.transformer.h[layer_index].attn.set_head_basis(head_index, basis.to(device))
         with torch.no_grad():
-            student_logits = compressed.model(**tokenized).logits
-        teacher_probs = torch.softmax(teacher_logits, dim=-1)
+            student_logits = scorer_adapter.model(**tokenized).logits
         student_log_probs = torch.log_softmax(student_logits, dim=-1)
         kl = teacher_probs * (torch.log(teacher_probs.clamp_min(1e-9)) - student_log_probs)
         return float(kl.sum(dim=-1).mean().item())
@@ -258,3 +266,5 @@ def run_rpedr_full(
         group_size=group_size,
         topk=topk,
     )
+
+

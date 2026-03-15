@@ -35,6 +35,9 @@ class CompressedGPT2Attention(nn.Module):
             for head_index, basis in basis_by_head.items()
         }
 
+    def set_head_basis(self, head_index: int, basis: torch.Tensor) -> None:
+        self.projector_by_head[head_index] = (basis @ basis.transpose(0, 1)).detach().clone()
+
     def _split_heads(self, tensor: torch.Tensor, width: int) -> torch.Tensor:
         batch_size, seq_len, _ = tensor.shape
         return tensor.view(batch_size, seq_len, self.num_heads, width).permute(0, 2, 1, 3)
@@ -165,3 +168,4 @@ class GPT2Adapter:
             spec.bases,
         )
         return clone
+

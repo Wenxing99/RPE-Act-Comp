@@ -12,7 +12,7 @@ if str(SRC) not in sys.path:
 from data.text_data import get_text_splits
 from experiments.collect_activations import collect_head_activations
 from models.gpt2_adapter import GPT2Adapter
-from utils.config import ensure_dir, load_yaml
+from utils.config import ensure_dir, load_yaml, resolve_runtime_device
 from utils.io import save_json, save_pt
 
 
@@ -26,14 +26,17 @@ def main() -> None:
     model_config = load_yaml(args.model_config)
     data_config = load_yaml(args.data_config)
     calibration_texts, _ = get_text_splits(data_config)
-    adapter = GPT2Adapter.from_config(model_config).to(model_config.get("device", "cpu"))
+    device, device_meta = resolve_runtime_device(model_config.get("device"))
+    print(f"[device] requested={device_meta['requested_device']} selected={device_meta['selected_device']} cuda_available={device_meta['cuda_available']}")
+    adapter = GPT2Adapter.from_config(model_config).to(device)
 
     bundle = collect_head_activations(
         adapter,
         calibration_texts,
         max_length=int(data_config["max_length"]),
-        device=model_config.get("device", "cpu"),
+        device=device,
     )
+    bundle["metadata"]["device"] = device_meta
 
     artifact_root = ensure_dir(args.artifact_root)
     save_pt(bundle, artifact_root / "head_activations.pt")

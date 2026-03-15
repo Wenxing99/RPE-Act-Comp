@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from collections.abc import Sequence
 
 
@@ -25,9 +26,19 @@ def load_named_splits(config: dict) -> dict[str, list[str]]:
 
 
 def _load_dataset_splits(dataset_config: dict) -> dict[str, list[str]]:
-    from datasets import load_dataset
+    from datasets import DownloadConfig, load_dataset
 
-    dataset = load_dataset(dataset_config["path"], dataset_config.get("name"))
+    local_files_only = bool(dataset_config.get("local_files_only", True))
+    if local_files_only:
+        os.environ.setdefault("HF_DATASETS_OFFLINE", "1")
+        os.environ.setdefault("HF_HUB_OFFLINE", "1")
+
+    download_config = DownloadConfig(local_files_only=local_files_only)
+    dataset = load_dataset(
+        dataset_config["path"],
+        dataset_config.get("name"),
+        download_config=download_config,
+    )
     text_field = dataset_config.get("text_field", "text")
     min_chars = int(dataset_config.get("min_chars", 1))
 
