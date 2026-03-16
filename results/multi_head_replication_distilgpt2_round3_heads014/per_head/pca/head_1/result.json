@@ -1,0 +1,14 @@
+{
+  "method": "pca",
+  "seed": null,
+  "layer_index": 3,
+  "head_index": 1,
+  "rank_ratio": 0.5,
+  "rank": 32,
+  "fit_splits": [
+    "S0_local",
+    "S1_select"
+  ],
+  "local_score": 0.0013307261979207397,
+  "select_score": 0.002430564956739545
+}

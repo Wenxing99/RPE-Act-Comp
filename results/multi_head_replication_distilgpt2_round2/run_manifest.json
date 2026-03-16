@@ -1,0 +1,73 @@
+{
+  "timestamp_utc": "2026-03-15T23:34:56.433135+00:00",
+  "git_commit": "dfe73308b93c733cbff6c57f8db0a3311da60182",
+  "model_config": "configs/model/distilgpt2_single_head.yaml",
+  "data_config": "configs/data/wikitext2_single_head_cached.yaml",
+  "exp_config": "configs/exp/multi_head_replication_distilgpt2_round2.yaml",
+  "model": "distilgpt2",
+  "layer": 3,
+  "heads": [
+    3,
+    4,
+    5
+  ],
+  "methods": [
+    "dense",
+    "pca",
+    "rpedr_single_best",
+    "rpedr_full"
+  ],
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "budget": {
+    "rank_ratio": 0.5,
+    "rank": 32,
+    "L": 256,
+    "M": 32,
+    "topk": 2
+  },
+  "splits": {
+    "local": "S0_local",
+    "select": "S1_select",
+    "modelsel": "S2_modelsel",
+    "test": "S3_test"
+  },
+  "baseline_fit_splits": [
+    "S0_local",
+    "S1_select"
+  ],
+  "device": {
+    "requested_device": "auto",
+    "selected_device": "cuda",
+    "cuda_available": true,
+    "cuda_device_count": 1,
+    "cuda_device_name": "NVIDIA GeForce RTX 4090",
+    "device_resolution_reason": "auto_cuda"
+  },
+  "execution": {
+    "requested_search_workers": 2,
+    "search_workers": 6,
+    "autotune_enabled": true,
+    "autotune_candidate_workers": [
+      2,
+      4,
+      6
+    ],
+    "autotune_selection_rule": "Choose the safe candidate with the shortest warmup wall-clock; discard any candidate with CUDA OOM or CPU fallback; break ties by smaller search_workers.",
+    "autotune_chosen_workers": 6
+  },
+  "sanity_checks": {
+    "unified_eval_path": "evaluate_causal_lm is used for dense and all compressed variants",
+    "targeted_layer": 3,
+    "targeted_heads": [
+      3,
+      4,
+      5
+    ],
+    "no_S3_in_search": true,
+    "pre_run_fixed_worker_autotune_only": true
+  }
+}

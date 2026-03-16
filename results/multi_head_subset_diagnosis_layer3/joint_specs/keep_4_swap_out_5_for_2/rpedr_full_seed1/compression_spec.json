@@ -1,0 +1,10 @@
+{
+  "heads": [
+    2,
+    3,
+    4
+  ],
+  "method": "rpedr_full",
+  "seed": 1,
+  "subset_name": "keep_4_swap_out_5_for_2"
+}

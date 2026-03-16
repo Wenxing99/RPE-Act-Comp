@@ -1,0 +1,32 @@
+artifact_root: results/multi_head_subset_diagnosis_layer3
+source_head_rounds:
+  0: results/multi_head_replication_distilgpt2_round1
+  1: results/multi_head_replication_distilgpt2_round1
+  2: results/multi_head_replication_distilgpt2_round1
+  3: results/multi_head_replication_distilgpt2_round2
+  4: results/multi_head_replication_distilgpt2_round2
+  5: results/multi_head_replication_distilgpt2_round2
+target:
+  layer_index: 3
+  rank_ratio: 0.5
+splits:
+  test: S3_test
+subset_specs:
+  - name: swap_out_4_for_2
+    head_indices: [2, 3, 5]
+    rationale: Replace suspected unfavorable head 4 with round1 easy head 2.
+  - name: keep_4_swap_out_5_for_2
+    head_indices: [2, 3, 4]
+    rationale: Control swap that adds head 2 but keeps head 4.
+  - name: inject_4_into_round1_core
+    head_indices: [0, 1, 4]
+    rationale: Replace round1 easy head 2 with suspected unfavorable head 4.
+methods:
+  - dense
+  - pca
+  - rpedr_single_best
+  - rpedr_full
+seeds:
+  - 0
+  - 1
+  - 2

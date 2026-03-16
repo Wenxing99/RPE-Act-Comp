@@ -1,0 +1,10 @@
+{
+  "heads": [
+    0,
+    1,
+    4
+  ],
+  "method": "rpedr_single_best",
+  "seed": 1,
+  "subset_name": "inject_4_into_round1_core"
+}

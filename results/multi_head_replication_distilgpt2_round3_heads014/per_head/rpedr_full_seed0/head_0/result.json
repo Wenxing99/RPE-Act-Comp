@@ -1,0 +1,18 @@
+{
+  "method": "rpedr_full",
+  "seed": 0,
+  "layer_index": 3,
+  "head_index": 0,
+  "rank_ratio": 0.5,
+  "rank": 32,
+  "local_score": 0.016724013526982162,
+  "select_score": 0.006593625726964092,
+  "elapsed_sec": 24.332512699998915,
+  "search_hparams": {
+    "num_groups": 256,
+    "group_size": 32,
+    "topk": 2,
+    "num_candidates": 8192
+  },
+  "selected_device": "cuda"
+}

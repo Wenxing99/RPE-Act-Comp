@@ -1,0 +1,58 @@
+{
+  "rows": [
+    {
+      "method": "rpedr_single_best",
+      "metric": "S3_test_nll",
+      "count": 3,
+      "mean": 4.622008800506592,
+      "std": 0.0,
+      "min": 4.622008800506592,
+      "max": 4.622008800506592
+    },
+    {
+      "method": "rpedr_single_best",
+      "metric": "S3_test_ppl",
+      "count": 3,
+      "mean": 101.69811830828438,
+      "std": 0.0,
+      "min": 101.69811830828438,
+      "max": 101.69811830828438
+    },
+    {
+      "method": "rpedr_single_best",
+      "metric": "S3_test_teacher_kl",
+      "count": 3,
+      "mean": 0.015264495275914669,
+      "std": 0.0,
+      "min": 0.015264495275914669,
+      "max": 0.015264495275914669
+    },
+    {
+      "method": "rpedr_full",
+      "metric": "S3_test_nll",
+      "count": 3,
+      "mean": 4.602603117624919,
+      "std": 0.0014533428336499347,
+      "min": 4.6009321212768555,
+      "max": 4.604475021362305
+    },
+    {
+      "method": "rpedr_full",
+      "metric": "S3_test_ppl",
+      "count": 3,
+      "mean": 99.74372772390306,
+      "std": 0.14498333749527664,
+      "min": 99.57709032116603,
+      "max": 99.93050769451614
+    },
+    {
+      "method": "rpedr_full",
+      "metric": "S3_test_teacher_kl",
+      "count": 3,
+      "mean": 0.013004275038838387,
+      "std": 0.00030223635190492203,
+      "min": 0.01268676109611988,
+      "max": 0.013410840183496475
+    }
+  ]
+}

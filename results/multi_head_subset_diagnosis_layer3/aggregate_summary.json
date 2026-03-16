@@ -1,0 +1,184 @@
+{
+  "rows": [
+    {
+      "subset_name": "inject_4_into_round1_core",
+      "method": "rpedr_single_best",
+      "metric": "S3_test_nll",
+      "count": 3,
+      "mean": 4.626702626546224,
+      "std": 0.00016274303105006548,
+      "min": 4.626472473144531,
+      "max": 4.62681770324707
+    },
+    {
+      "subset_name": "inject_4_into_round1_core",
+      "method": "rpedr_single_best",
+      "metric": "S3_test_ppl",
+      "count": 3,
+      "mean": 102.1765949987366,
+      "std": 0.016627571884269943,
+      "min": 102.15308006106854,
+      "max": 102.18835246757064
+    },
+    {
+      "subset_name": "inject_4_into_round1_core",
+      "method": "rpedr_single_best",
+      "metric": "S3_test_teacher_kl",
+      "count": 3,
+      "mean": 0.012909147888422012,
+      "std": 3.865656261858562e-06,
+      "min": 0.01290368102490902,
+      "max": 0.012911881320178509
+    },
+    {
+      "subset_name": "inject_4_into_round1_core",
+      "method": "rpedr_full",
+      "metric": "S3_test_nll",
+      "count": 3,
+      "mean": 4.602425257364909,
+      "std": 0.0008789215109101416,
+      "min": 4.601471424102783,
+      "max": 4.603592395782471
+    },
+    {
+      "subset_name": "inject_4_into_round1_core",
+      "method": "rpedr_full",
+      "metric": "S3_test_ppl",
+      "count": 3,
+      "mean": 99.72592204809878,
+      "std": 0.08766471609957595,
+      "min": 99.63080701085322,
+      "max": 99.8423453850973
+    },
+    {
+      "subset_name": "inject_4_into_round1_core",
+      "method": "rpedr_full",
+      "metric": "S3_test_teacher_kl",
+      "count": 3,
+      "mean": 0.012291983390847841,
+      "std": 0.00027044191438960424,
+      "min": 0.011972293257713318,
+      "max": 0.012633644044399261
+    },
+    {
+      "subset_name": "keep_4_swap_out_5_for_2",
+      "method": "rpedr_single_best",
+      "metric": "S3_test_nll",
+      "count": 3,
+      "mean": 4.614050388336182,
+      "std": 0.0,
+      "min": 4.614050388336182,
+      "max": 4.614050388336182
+    },
+    {
+      "subset_name": "keep_4_swap_out_5_for_2",
+      "method": "rpedr_single_best",
+      "metric": "S3_test_ppl",
+      "count": 3,
+      "mean": 100.89197483170204,
+      "std": 0.0,
+      "min": 100.89197483170204,
+      "max": 100.89197483170204
+    },
+    {
+      "subset_name": "keep_4_swap_out_5_for_2",
+      "method": "rpedr_single_best",
+      "metric": "S3_test_teacher_kl",
+      "count": 3,
+      "mean": 0.010995686054229736,
+      "std": 0.0,
+      "min": 0.010995686054229736,
+      "max": 0.010995686054229736
+    },
+    {
+      "subset_name": "keep_4_swap_out_5_for_2",
+      "method": "rpedr_full",
+      "metric": "S3_test_nll",
+      "count": 3,
+      "mean": 4.606931050618489,
+      "std": 0.0013062318010402495,
+      "min": 4.60508918762207,
+      "max": 4.607974529266357
+    },
+    {
+      "subset_name": "keep_4_swap_out_5_for_2",
+      "method": "rpedr_full",
+      "metric": "S3_test_ppl",
+      "count": 3,
+      "mean": 100.17632702311937,
+      "std": 0.13079460970503895,
+      "min": 99.99190049142581,
+      "max": 100.28082791271744
+    },
+    {
+      "subset_name": "keep_4_swap_out_5_for_2",
+      "method": "rpedr_full",
+      "metric": "S3_test_teacher_kl",
+      "count": 3,
+      "mean": 0.008703145819405714,
+      "std": 0.0001401714832347984,
+      "min": 0.008573988452553749,
+      "max": 0.00889795832335949
+    },
+    {
+      "subset_name": "swap_out_4_for_2",
+      "method": "rpedr_single_best",
+      "metric": "S3_test_nll",
+      "count": 3,
+      "mean": 4.60347843170166,
+      "std": 0.0,
+      "min": 4.60347843170166,
+      "max": 4.60347843170166
+    },
+    {
+      "subset_name": "swap_out_4_for_2",
+      "method": "rpedr_single_best",
+      "metric": "S3_test_ppl",
+      "count": 3,
+      "mean": 99.83096759232168,
+      "std": 0.0,
+      "min": 99.83096759232168,
+      "max": 99.83096759232168
+    },
+    {
+      "subset_name": "swap_out_4_for_2",
+      "method": "rpedr_single_best",
+      "metric": "S3_test_teacher_kl",
+      "count": 3,
+      "mean": 0.012392351403832436,
+      "std": 0.0,
+      "min": 0.012392351403832436,
+      "max": 0.012392351403832436
+    },
+    {
+      "subset_name": "swap_out_4_for_2",
+      "method": "rpedr_full",
+      "metric": "S3_test_nll",
+      "count": 3,
+      "mean": 4.595653057098389,
+      "std": 0.0008753385662197116,
+      "min": 4.594474792480469,
+      "max": 4.59657096862793
+    },
+    {
+      "subset_name": "swap_out_4_for_2",
+      "method": "rpedr_full",
+      "metric": "S3_test_ppl",
+      "count": 3,
+      "mean": 99.05283950860148,
+      "std": 0.0866888247145499,
+      "min": 98.93615988473316,
+      "max": 99.14376501564938
+    },
+    {
+      "subset_name": "swap_out_4_for_2",
+      "method": "rpedr_full",
+      "metric": "S3_test_teacher_kl",
+      "count": 3,
+      "mean": 0.010433776614566645,
+      "std": 0.00024256157517454498,
+      "min": 0.01022837869822979,
+      "max": 0.010774410329759121
+    }
+  ]
+}

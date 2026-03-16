@@ -1,0 +1,210 @@
+{
+  "enabled": true,
+  "mode": "pre_run_fixed_worker_autotune",
+  "selection_rule": "Choose the safe candidate with the shortest warmup wall-clock; discard any candidate with CUDA OOM or CPU fallback; break ties by smaller search_workers.",
+  "boundary_expansion_rule": "Start from the configured discrete candidate set. If the current best safe candidate equals the current upper tested boundary, test exactly one additional higher candidate at +2 workers. Repeat only while the best safe candidate remains on the upper boundary, and never exceed 10 search_workers.",
+  "candidate_workers": [
+    2,
+    4,
+    6
+  ],
+  "max_search_workers": 10,
+  "warmup_job_limit": 2,
+  "warmup_jobs": [
+    [
+      3,
+      0
+    ],
+    [
+      4,
+      0
+    ]
+  ],
+  "candidate_results": [
+    {
+      "search_workers": 2,
+      "warmup_job_count": 2,
+      "warmup_jobs": [
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0
+        ]
+      ],
+      "elapsed_sec": 9.69645180000225,
+      "cuda_oom": false,
+      "cpu_fallback": false,
+      "worker_elapsed_sec": [
+        9.02592039999945,
+        9.063136000000668
+      ],
+      "gpu_before": {
+        "name": "NVIDIA GeForce RTX 4090",
+        "memory_total_mb": 24564,
+        "memory_used_mb": 3424,
+        "utilization_gpu_pct": 5
+      },
+      "gpu_after": {
+        "name": "NVIDIA GeForce RTX 4090",
+        "memory_total_mb": 24564,
+        "memory_used_mb": 5499,
+        "utilization_gpu_pct": 84
+      },
+      "peak_cuda_memory_bytes": 2707345408,
+      "worker_log_count": 2
+    },
+    {
+      "search_workers": 4,
+      "warmup_job_count": 2,
+      "warmup_jobs": [
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0
+        ]
+      ],
+      "elapsed_sec": 10.562565100000938,
+      "cuda_oom": false,
+      "cpu_fallback": false,
+      "worker_elapsed_sec": [
+        9.935904499998287,
+        9.952795100001822
+      ],
+      "gpu_before": {
+        "name": "NVIDIA GeForce RTX 4090",
+        "memory_total_mb": 24564,
+        "memory_used_mb": 5499,
+        "utilization_gpu_pct": 84
+      },
+      "gpu_after": {
+        "name": "NVIDIA GeForce RTX 4090",
+        "memory_total_mb": 24564,
+        "memory_used_mb": 5495,
+        "utilization_gpu_pct": 86
+      },
+      "peak_cuda_memory_bytes": 2707345408,
+      "worker_log_count": 2
+    },
+    {
+      "search_workers": 6,
+      "warmup_job_count": 2,
+      "warmup_jobs": [
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0
+        ]
+      ],
+      "elapsed_sec": 8.836602700001094,
+      "cuda_oom": false,
+      "cpu_fallback": false,
+      "worker_elapsed_sec": [
+        8.294860099998914,
+        8.201402799997595
+      ],
+      "gpu_before": {
+        "name": "NVIDIA GeForce RTX 4090",
+        "memory_total_mb": 24564,
+        "memory_used_mb": 5495,
+        "utilization_gpu_pct": 86
+      },
+      "gpu_after": {
+        "name": "NVIDIA GeForce RTX 4090",
+        "memory_total_mb": 24564,
+        "memory_used_mb": 5495,
+        "utilization_gpu_pct": 92
+      },
+      "peak_cuda_memory_bytes": 2706821120,
+      "worker_log_count": 2
+    },
+    {
+      "search_workers": 8,
+      "warmup_job_count": 2,
+      "warmup_jobs": [
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0
+        ]
+      ],
+      "elapsed_sec": 9.574407399999473,
+      "cuda_oom": false,
+      "cpu_fallback": false,
+      "worker_elapsed_sec": [
+        8.957209399999556,
+        8.97827210000105
+      ],
+      "gpu_before": {
+        "name": "NVIDIA GeForce RTX 4090",
+        "memory_total_mb": 24564,
+        "memory_used_mb": 5495,
+        "utilization_gpu_pct": 92
+      },
+      "gpu_after": {
+        "name": "NVIDIA GeForce RTX 4090",
+        "memory_total_mb": 24564,
+        "memory_used_mb": 5453,
+        "utilization_gpu_pct": 92
+      },
+      "peak_cuda_memory_bytes": 2707345408,
+      "worker_log_count": 2
+    }
+  ],
+  "expansion_trace": [
+    {
+      "tested_workers": [
+        2
+      ],
+      "best_safe_workers": 2,
+      "current_upper_boundary": 2,
+      "expanded_upward": false,
+      "next_candidate": 4
+    },
+    {
+      "tested_workers": [
+        2,
+        4
+      ],
+      "best_safe_workers": 2,
+      "current_upper_boundary": 4,
+      "expanded_upward": false,
+      "next_candidate": null
+    },
+    {
+      "tested_workers": [
+        2,
+        4,
+        6
+      ],
+      "best_safe_workers": 6,
+      "current_upper_boundary": 6,
+      "expanded_upward": true,
+      "next_candidate": 8
+    },
+    {
+      "tested_workers": [
+        2,
+        4,
+        6,
+        8
+      ],
+      "best_safe_workers": 6,
+      "current_upper_boundary": 8,
+      "expanded_upward": false,
+      "next_candidate": null
+    }
+  ],
+  "chosen_workers": 6
+}

@@ -1,0 +1,81 @@
+{
+  "timestamp_utc": "2026-03-15T23:57:39.548492+00:00",
+  "git_commit": "dfe73308b93c733cbff6c57f8db0a3311da60182",
+  "model_config": "configs/model/distilgpt2_single_head.yaml",
+  "data_config": "configs/data/wikitext2_single_head_cached.yaml",
+  "exp_config": "configs/exp/multi_head_subset_diagnosis_layer3.yaml",
+  "model": "distilgpt2",
+  "layer": 3,
+  "rank_ratio": 0.5,
+  "rank": 32,
+  "budget": {
+    "L": 256,
+    "M": 32,
+    "topk": 2
+  },
+  "splits": {
+    "test": "S3_test"
+  },
+  "methods": [
+    "dense",
+    "pca",
+    "rpedr_single_best",
+    "rpedr_full"
+  ],
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "subset_specs": [
+    {
+      "name": "swap_out_4_for_2",
+      "head_indices": [
+        2,
+        3,
+        5
+      ],
+      "rationale": "Replace suspected unfavorable head 4 with round1 easy head 2."
+    },
+    {
+      "name": "keep_4_swap_out_5_for_2",
+      "head_indices": [
+        2,
+        3,
+        4
+      ],
+      "rationale": "Control swap that adds head 2 but keeps head 4."
+    },
+    {
+      "name": "inject_4_into_round1_core",
+      "head_indices": [
+        0,
+        1,
+        4
+      ],
+      "rationale": "Replace round1 easy head 2 with suspected unfavorable head 4."
+    }
+  ],
+  "source_head_rounds": {
+    "0": "D:/ai_workspace/projects/RPE-Act-Comp/results/multi_head_replication_distilgpt2_round1",
+    "1": "D:/ai_workspace/projects/RPE-Act-Comp/results/multi_head_replication_distilgpt2_round1",
+    "2": "D:/ai_workspace/projects/RPE-Act-Comp/results/multi_head_replication_distilgpt2_round1",
+    "3": "D:/ai_workspace/projects/RPE-Act-Comp/results/multi_head_replication_distilgpt2_round2",
+    "4": "D:/ai_workspace/projects/RPE-Act-Comp/results/multi_head_replication_distilgpt2_round2",
+    "5": "D:/ai_workspace/projects/RPE-Act-Comp/results/multi_head_replication_distilgpt2_round2"
+  },
+  "reuse_existing_per_head_artifacts": true,
+  "device": {
+    "requested_device": "auto",
+    "selected_device": "cuda",
+    "cuda_available": true,
+    "cuda_device_count": 1,
+    "cuda_device_name": "NVIDIA GeForce RTX 4090",
+    "device_resolution_reason": "auto_cuda"
+  },
+  "execution": {
+    "new_search_performed": false,
+    "autotune_applicable": false,
+    "note": "This diagnosis reuses saved per-head bases from round1 and round2 and runs only joint evals."
+  }
+}

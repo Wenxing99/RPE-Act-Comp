@@ -1,0 +1,11 @@
+{
+  "method": "rpedr_full",
+  "seed": 2,
+  "layer_index": 3,
+  "rank": 32,
+  "heads": [
+    3,
+    4,
+    5
+  ]
+}

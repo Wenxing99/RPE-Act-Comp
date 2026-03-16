@@ -1,0 +1,11 @@
+{
+  "method": "rpedr_single_best",
+  "seed": 1,
+  "layer_index": 3,
+  "rank": 32,
+  "heads": [
+    3,
+    4,
+    5
+  ]
+}

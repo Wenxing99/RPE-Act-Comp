@@ -1,0 +1,9 @@
+{
+  "heads": [
+    2,
+    3,
+    5
+  ],
+  "method": "pca",
+  "subset_name": "swap_out_4_for_2"
+}
