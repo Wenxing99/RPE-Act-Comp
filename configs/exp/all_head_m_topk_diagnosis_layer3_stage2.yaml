@@ -1,0 +1,57 @@
+artifact_root: results/all_head_m_topk_diagnosis_layer3_stage2
+master_artifact_root: results/all_head_layer3_master_table
+reference_all_head_run_artifact_root: results/multi_head_replication_distilgpt2_layer3_all_heads_round1
+reference_m_topk_diagnosis_artifact_root: results/all_head_m_topk_diagnosis_layer3
+target:
+  layer_index: 3
+  head_indices:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    - 11
+  rank_ratio: 0.5
+splits:
+  local: S0_local
+  select: S1_select
+  modelsel: S2_modelsel
+  test: S3_test
+baseline_fit_splits:
+  - S0_local
+  - S1_select
+search:
+  num_groups: 256
+grid:
+  group_sizes:
+    - 32
+    - 64
+    - 128
+    - 256
+  topk_values:
+    - 2
+    - 4
+    - 8
+    - 16
+    - 32
+methods:
+  - rpedr_full
+seeds:
+  - 0
+  - 1
+  - 2
+execution:
+  search_workers: 2
+  autotune:
+    enabled: true
+    candidate_workers:
+      - 2
+      - 4
+      - 6
+    warmup_job_limit: 2

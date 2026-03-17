@@ -23,10 +23,12 @@ from experiments.collect_activations import collect_head_activations
 from experiments.evaluate_lm import evaluate_causal_lm
 from experiments.single_head_rpedr import (
     build_single_head_pca_basis,
+    build_single_head_random_basis,
     compute_local_score,
     extract_single_head_matrix,
     make_teacher_kl_scorer,
     run_rpedr_full,
+    run_rpedr_m1,
     run_rpedr_single_best,
     run_rpedr_single_best_and_full,
 )
@@ -185,6 +187,7 @@ def _search_worker(
     select_texts: list[str],
     max_length: int,
     artifact_root: Path,
+    needs_no_selection: bool,
     needs_single_best: bool,
     needs_full: bool,
     concurrency_level: int,
@@ -194,11 +197,21 @@ def _search_worker(
     local_output_matrix = extract_single_head_matrix(local_bundle, "output", layer_index, head_index).to(device)
     output_weight = worker_adapter.get_head_output_weight(layer_index, head_index)
     output_paths = {
+        "rpedr_no_selection": artifact_root / "per_head" / f"rpedr_no_selection_seed{seed}" / f"head_{head_index}",
         "rpedr_single_best": artifact_root / "per_head" / f"rpedr_single_best_seed{seed}" / f"head_{head_index}",
         "rpedr_full": artifact_root / "per_head" / f"rpedr_full_seed{seed}" / f"head_{head_index}",
     }
+    active_methods = [
+        method_name
+        for method_name, enabled in [
+            ("rpedr_no_selection", needs_no_selection),
+            ("rpedr_single_best", needs_single_best),
+            ("rpedr_full", needs_full),
+        ]
+        if enabled
+    ]
     worker_log = {
-        "method": "shared_search" if needs_single_best and needs_full else ("rpedr_single_best" if needs_single_best else "rpedr_full"),
+        "method": "+".join(active_methods),
         "head": head_index,
         "seed": seed,
         "selected_device": device_meta["selected_device"],
@@ -227,7 +240,7 @@ def _search_worker(
             max_length=max_length,
             device=device,
         )
-        if needs_single_best and needs_full:
+        if needs_single_best and needs_full and not needs_no_selection:
             single_best_result, full_result = run_rpedr_single_best_and_full(
                 local_activations=local_output_matrix,
                 output_weight=output_weight,
@@ -245,6 +258,16 @@ def _search_worker(
             }
         else:
             result_by_method = {}
+            if needs_no_selection:
+                result_by_method["rpedr_no_selection"] = run_rpedr_m1(
+                    local_activations=local_output_matrix,
+                    output_weight=output_weight,
+                    head_dim=worker_adapter.head_dim,
+                    rank=rank,
+                    seed=seed,
+                    scorer=scorer,
+                    num_groups=int(search_cfg["num_groups"]),
+                )
             if needs_single_best:
                 result_by_method["rpedr_single_best"] = run_rpedr_single_best(
                     local_activations=local_output_matrix,
@@ -303,8 +326,6 @@ def _search_worker(
         "worker_log": worker_log,
         "results": payload_by_method,
     }
-
-
 def _run_search_jobs(
     *,
     adapter: GPT2Adapter,
@@ -328,13 +349,16 @@ def _run_search_jobs(
 ) -> tuple[dict[tuple[str, int], dict[int, object]], list[dict]]:
     stochastic_results: dict[tuple[str, int], dict[int, object]] = {}
     worker_logs: list[dict] = []
+    needs_no_selection = "rpedr_no_selection" in methods
     needs_single_best = "rpedr_single_best" in methods
     needs_full = "rpedr_full" in methods
 
-    if not (needs_single_best or needs_full):
+    if not (needs_no_selection or needs_single_best or needs_full):
         return stochastic_results, worker_logs
 
     for seed in seeds:
+        if needs_no_selection:
+            stochastic_results[("rpedr_no_selection", seed)] = {}
         if needs_single_best:
             stochastic_results[("rpedr_single_best", seed)] = {}
         if needs_full:
@@ -363,6 +387,7 @@ def _run_search_jobs(
                 select_texts=named_splits[split_cfg["select"]],
                 max_length=int(data_config["max_length"]),
                 artifact_root=artifact_root,
+                needs_no_selection=needs_no_selection,
                 needs_single_best=needs_single_best,
                 needs_full=needs_full,
                 concurrency_level=concurrency_level,
@@ -386,7 +411,6 @@ def _run_search_jobs(
                     )
 
     return stochastic_results, worker_logs
-
 def _autotune_search_workers(
     *,
     adapter: GPT2Adapter,
@@ -596,7 +620,7 @@ def main() -> None:
     chosen_search_workers = requested_search_workers
     autotune_summary = None
     autotune_enabled = bool(execution_cfg.get("autotune", {}).get("enabled", False))
-    if ("rpedr_single_best" in methods or "rpedr_full" in methods) and autotune_enabled:
+    if ("rpedr_no_selection" in methods or "rpedr_single_best" in methods or "rpedr_full" in methods) and autotune_enabled:
         chosen_search_workers, autotune_summary = _autotune_search_workers(
             adapter=adapter,
             device=device,
@@ -661,6 +685,73 @@ def main() -> None:
         }
     )
 
+    if "random" in methods:
+        for seed in seeds:
+            bases: dict[int, object] = {}
+            for head_index in head_indices:
+                local_output_matrix = extract_single_head_matrix(local_bundle, "output", layer_index, head_index).to(device)
+                output_weight = adapter.get_head_output_weight(layer_index, head_index)
+                basis = build_single_head_random_basis(adapter.head_dim, rank, seed=seed + head_index)
+                random_select_scorer = make_teacher_kl_scorer(
+                    adapter,
+                    layer_index=layer_index,
+                    head_index=head_index,
+                    texts=named_splits[split_cfg["select"]],
+                    max_length=int(data_config["max_length"]),
+                    device=device,
+                )
+                metadata = {
+                    "method": "random",
+                    "seed": seed,
+                    "layer_index": layer_index,
+                    "head_index": head_index,
+                    "rank_ratio": rank_ratio,
+                    "rank": rank,
+                    "local_score": compute_local_score(local_output_matrix, output_weight, basis),
+                    "select_score": random_select_scorer(basis),
+                }
+                bases[head_index] = basis
+                _save_per_head_result(
+                    artifact_root,
+                    method="random",
+                    head_index=head_index,
+                    seed=seed,
+                    payload={"basis": basis, "metadata": metadata},
+                )
+
+            spec = CompressionSpec(layer_index=layer_index, rank=rank, bases=bases)
+            spec_path = _save_joint_spec(artifact_root, "random", seed, spec)
+            metrics = _evaluate_joint(
+                adapter,
+                named_splits[split_cfg["test"]],
+                max_length=int(data_config["max_length"]),
+                device=device,
+                spec=spec,
+            )
+            eval_path = artifact_root / "evals" / f"random_seed{seed}" / "eval.json"
+            save_json(metrics, eval_path)
+            rows.append(
+                {
+                    "method": "random",
+                    "seed": seed,
+                    "model": model_config.get("pretrained_name", model_config.get("model_type", "unknown")),
+                    "layer": layer_index,
+                    "heads": head_indices,
+                    "rank_ratio": rank_ratio,
+                    "rank": rank,
+                    "L": None,
+                    "M": None,
+                    "topk": None,
+                    "final_report_split": split_cfg["test"],
+                    "selected_device": device_meta["selected_device"],
+                    "S3_test_nll": metrics["nll"],
+                    "S3_test_ppl": metrics["perplexity"],
+                    "S3_test_teacher_kl": metrics.get("teacher_logit_kl"),
+                    "joint_spec_path": str(spec_path.as_posix()) if spec_path is not None else None,
+                    "eval_path": str(eval_path.as_posix()),
+                    "stochastic": True,
+                }
+            )
     if "pca" in methods:
         bases: dict[int, object] = {}
         for head_index in head_indices:
@@ -753,7 +844,7 @@ def main() -> None:
         persist_artifacts=True,
     )
 
-    for method_name in ["rpedr_single_best", "rpedr_full"]:
+    for method_name in ["rpedr_no_selection", "rpedr_single_best", "rpedr_full"]:
         if method_name not in methods:
             continue
         for seed in seeds:
@@ -779,8 +870,8 @@ def main() -> None:
                     "rank_ratio": rank_ratio,
                     "rank": rank,
                     "L": int(search_cfg["num_groups"]),
-                    "M": int(search_cfg["group_size"]),
-                    "topk": int(search_cfg["topk"]),
+                    "M": 1 if method_name == "rpedr_no_selection" else int(search_cfg["group_size"]),
+                    "topk": 1 if method_name == "rpedr_no_selection" else int(search_cfg["topk"]),
                     "final_report_split": split_cfg["test"],
                     "selected_device": device_meta["selected_device"],
                     "S3_test_nll": metrics["nll"],
@@ -792,7 +883,7 @@ def main() -> None:
                 }
             )
 
-    aggregate_rows = _aggregate_rows(rows, stochastic_methods=["rpedr_single_best", "rpedr_full"])
+    aggregate_rows = _aggregate_rows(rows, stochastic_methods=[method for method in ["random", "rpedr_no_selection", "rpedr_single_best", "rpedr_full"] if method in methods])
 
     manifest = {
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
@@ -896,6 +987,12 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
+
 
 
 
